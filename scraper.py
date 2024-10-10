@@ -7,6 +7,10 @@ import os
 from dotenv import load_dotenv
 import csv
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 load_dotenv()
 
@@ -41,16 +45,16 @@ def get_index_data(date_range, retries=5):
                 data = response.json().get('data', {}).get('indexCloseOnlineRecords', [])
                 return from_date, to_date, data
             elif response.status_code == 429:
-                print(f"Rate limit exceeded for {from_date} to {to_date}. Retrying after a delay...")
+                logging.warning(f"Rate limit exceeded for {from_date} to {to_date}. Retrying after a delay...")
                 time.sleep(2 ** attempt)  # Exponential backoff
             elif response.status_code == 401:
-                print(f"Unauthorized request for {from_date} to {to_date}. Please check your headers or cookies.")
+                logging.error(f"Unauthorized request for {from_date} to {to_date}. Please check your headers or cookies.")
                 break
             else:
-                print(f"Failed to fetch data for {from_date} to {to_date}. Status Code: {response.status_code}")
+                logging.error(f"Failed to fetch data for {from_date} to {to_date}. Status Code: {response.status_code}")
                 break
         except requests.exceptions.RequestException as e:
-            print(f"Request failed for {from_date} to {to_date}: {e}")
+            logging.error(f"Request failed for {from_date} to {to_date}: {e}")
             time.sleep(2 ** attempt)  # Exponential backoff for other request failures
         attempt += 1
     return from_date, to_date, []
@@ -89,7 +93,7 @@ def get_all_returns():
         for future in as_completed(future_to_date_range):
             from_date, to_date, data = future.result()
             if data:
-                print(f'Fetched data for time period {from_date} to {to_date}')
+                logging.info(f'Fetched data for time period {from_date} to {to_date}')
                 yearly_return = calculate_return(data)
                 if yearly_return is not None:
                     returns.append(yearly_return)
@@ -117,4 +121,4 @@ def plot_returns(returns, dates):
 if __name__ == "__main__":
     returns, dates = get_all_returns()
     plot_returns(returns, dates)
-    print(f"Data has been saved to nifty50_returns.csv")
+    logging.info("Data has been saved to nifty50_returns.csv")
