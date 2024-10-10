@@ -1,66 +1,78 @@
-# NIFTY 50 Returns Analyzer
 
-This Python script fetches historical data for the NIFTY 50 index from the National Stock Exchange of India (NSE) website and calculates 365-day returns. It then visualizes these returns over time. The script now uses parallel processing to significantly speed up data retrieval.
+# Nifty Indices Data Scraper
+
+This Python script fetches historical data for a list of Nifty indices from the NSE website and saves the data in CSV format. The script uses multi-threading to speed up the process of data fetching and logging to track progress.
 
 ## Features
 
-- Fetches NIFTY 50 index data from the NSE API using parallel processing
-- Calculates 365-day returns for each day, moving backwards in time
-- Implements rate limiting, error handling, and retry mechanisms
-- Visualizes the returns data using matplotlib
-- Uses environment variables for secure cookie storage
-- Saves fetched data to a CSV file for further analysis
+- Fetches data for multiple Nifty indices using a list of predefined index names.
+- Supports fetching data for a specific date range.
+- Saves the fetched data into CSV files.
+- Multi-threaded to improve performance using `ThreadPoolExecutor`.
+- Uses environment variables for sensitive data (e.g., cookies).
+- Includes logging for error handling and progress tracking.
 
-## Prerequisites
+## Requirements
 
-- Python 3.x
-- pip (Python package manager)
+- Python 3.7+
+- `requests` for making HTTP requests.
+- `dotenv` for loading environment variables from a `.env` file.
+- `csv` for saving data into CSV format.
+- `concurrent.futures` for handling multi-threading.
+- `logging` for tracking the process.
+- `.env` file to store the required environment variables.
 
 ## Installation
 
-1. Clone this repository or download the script.
-2. Install the required packages:
+1. Clone the repository:
 
-```bash
-pip install requests pandas matplotlib python-dotenv
-```
+    ```bash
+    git clone https://github.com/TheRodzz/nse-scaper.git
+    cd nse-scraper
+    ```
 
-3. Create a `.env` file in the same directory as the script with the following content:
+2. Install the required Python packages:
 
-```
-NSE_COOKIE=your_nse_cookie_value_here
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Replace `your_nse_cookie_value_here` with the actual cookie value from the NSE website.
+3. Set up the `.env` file in the root directory of the project with the following content:
+
+    ```
+    cookie=your_cookie_here
+    ```
 
 ## Usage
 
-1. Ensure your `.env` file is set up with the correct NSE_COOKIE value.
-2. Run the script:
+1. To run the script, simply execute the following command:
 
-```bash
-python scraper.py
-```
+    ```bash
+    python nse-scraper.py
+    ```
 
-3. The script will fetch data using parallel processing, calculate returns, save the data to a CSV file, and display a plot of the results.
+2. The data will be fetched and saved to CSV files in the `nifty_data` folder. Each index will have its own CSV file.
 
-## Configuration
+## Customization
 
-- Adjust the `end_date` in the `get_all_returns()` function to change the analysis period.
-- Modify the `max_workers` parameter in `ThreadPoolExecutor(max_workers=5)` to adjust the number of concurrent requests.
-- Adjust the `time.sleep(0.2)` duration in the main loop to fine-tune the rate limiting as needed.
+- You can modify the list of Nifty indices in the `INDEX_NAMES` list.
+- Adjust the date range by changing the `START_DATE` and `END_DATE` variables.
+  
+    Example:
+    
+    ```python
+    START_DATE = datetime(2000, 1, 1)
+    END_DATE = datetime(2023, 12, 31)
+    ```
 
-## Important Notes
+## Logging
 
-- This script relies on making requests to the NSE website. Ensure you have permission to access and use this data.
-- The cookie value in the `.env` file needs to be updated regularly to maintain access to the NSE API.
-- Be mindful of NSE's terms of service and any rate limiting they may impose.
-- The parallel processing feature significantly improves performance but may require adjustments based on your system's capabilities and the server's rate limits.
+The script logs its activities, including successful downloads and errors, which can be helpful for monitoring its progress. The log messages are printed to the console.
 
-## Disclaimer
+## Contributing
 
-This tool is for educational and research purposes only. It is not intended for making investment decisions. Always verify the data independently and consult with a financial advisor before making any investment choices.
+If you wish to contribute to the project, please fork the repository and submit a pull request.
 
 ## License
 
-This project is open-source and available under the MIT License.
+This project is licensed under the MIT License.
