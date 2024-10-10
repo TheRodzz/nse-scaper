@@ -1,14 +1,15 @@
 # NIFTY 50 Returns Analyzer
 
-This Python script fetches historical data for the NIFTY 50 index from the National Stock Exchange of India (NSE) website and calculates 365-day returns. It then visualizes these returns over time.
+This Python script fetches historical data for the NIFTY 50 index from the National Stock Exchange of India (NSE) website and calculates 365-day returns. It then visualizes these returns over time. The script now uses parallel processing to significantly speed up data retrieval.
 
 ## Features
 
-- Fetches NIFTY 50 index data from the NSE API
+- Fetches NIFTY 50 index data from the NSE API using parallel processing
 - Calculates 365-day returns for each day, moving backwards in time
-- Implements rate limiting and error handling
+- Implements rate limiting, error handling, and retry mechanisms
 - Visualizes the returns data using matplotlib
 - Uses environment variables for secure cookie storage
+- Saves fetched data to a CSV file for further analysis
 
 ## Prerequisites
 
@@ -38,22 +39,23 @@ Replace `your_nse_cookie_value_here` with the actual cookie value from the NSE w
 2. Run the script:
 
 ```bash
-python nifty50_returns_analyzer.py
+python scraper.py
 ```
 
-3. The script will fetch data, calculate returns, and display a plot of the results.
+3. The script will fetch data using parallel processing, calculate returns, save the data to a CSV file, and display a plot of the results.
 
 ## Configuration
 
 - Adjust the `end_date` in the `get_all_returns()` function to change the analysis period.
-- Modify the `time.sleep()` duration to adjust the rate limiting as needed.
+- Modify the `max_workers` parameter in `ThreadPoolExecutor(max_workers=5)` to adjust the number of concurrent requests.
+- Adjust the `time.sleep(0.2)` duration in the main loop to fine-tune the rate limiting as needed.
 
 ## Important Notes
 
 - This script relies on making requests to the NSE website. Ensure you have permission to access and use this data.
 - The cookie value in the `.env` file needs to be updated regularly to maintain access to the NSE API.
 - Be mindful of NSE's terms of service and any rate limiting they may impose.
-- Never commit your `.env` file to version control. Add it to your `.gitignore` file to prevent accidental commits.
+- The parallel processing feature significantly improves performance but may require adjustments based on your system's capabilities and the server's rate limits.
 
 ## Disclaimer
 
